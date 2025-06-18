@@ -129,7 +129,7 @@ fun CartUserScreen(navController: NavHostController) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
+                            .padding(0.dp)
                             .clip(RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp, bottomEnd = 0.dp, bottomStart = 0.dp)),
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ){

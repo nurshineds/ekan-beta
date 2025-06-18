@@ -245,7 +245,7 @@ fun UserProductDetailScreen(navController: NavHostController, productId: String)
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
-                                text = selectedProduct.rating.toString(),
+                                text = String.format("%.1f", selectedProduct.rating),
                                 color = Color.Black,
                                 fontSize = 21.sp,
                                 fontWeight = FontWeight.Bold,
