@@ -32,17 +32,23 @@ import com.kel5.ekanbeta.ui.theme.BackgroundColor
 import com.kel5.ekanbeta.ui.theme.Poppins
 import com.kel5.ekanbeta.ui.theme.PrimaryColor
 import coil.compose.AsyncImage
+import com.kel5.ekanbeta.Data.CategoryData
 import kotlinx.coroutines.launch
 
 @Composable
 fun ProductUserScreen(navController: NavHostController) {
     val productViewModel: ProductViewModel = viewModel()
     val products by productViewModel.productList.collectAsState()
+    val categoryList by productViewModel.categoryList.collectAsState()
 
     val searchText = remember { mutableStateOf("") }
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val selectedCategoryInput = remember { mutableStateOf<String?>(null) }
+    val priceMinInput = remember { mutableStateOf("") }
+    val priceMaxInput = remember { mutableStateOf("") }
 
     val selectedCategory = remember { mutableStateOf<String?>(null) }
     val priceMin = remember { mutableStateOf("") }
@@ -60,11 +66,9 @@ fun ProductUserScreen(navController: NavHostController) {
             val max = priceMax.value.toIntOrNull() ?: Int.MAX_VALUE
 
             products.filter { prod ->
-                val hargaSebenarnya = if (prod.diskon > 0) prod.hargaDiskon else prod.harga
-
                 prod.nama.contains(searchText.value, ignoreCase = true) &&
                         (selectedCategory.value == null || prod.kategori == selectedCategory.value) &&
-                        hargaSebenarnya in min..max
+                        prod.hargaDiskon in min..max
             }
         }
     }
@@ -74,10 +78,14 @@ fun ProductUserScreen(navController: NavHostController) {
         drawerContent = {
             ModalDrawerSheet {
                 FilterSidebar(
-                    selectedCategory = selectedCategory,
-                    priceMin = priceMin,
-                    priceMax = priceMax,
+                    selectedCategory = selectedCategoryInput,
+                    priceMin = priceMinInput,
+                    priceMax = priceMaxInput,
+                    categories = categoryList,
                     onApply = {
+                        selectedCategory.value = selectedCategoryInput.value
+                        priceMin.value = priceMinInput.value
+                        priceMax.value = priceMaxInput.value
                         scope.launch { drawerState.close() }
                     }
                 )
@@ -174,7 +182,12 @@ fun ProductUserScreen(navController: NavHostController) {
                         )
 
                         Button(
-                            onClick = { scope.launch { drawerState.open() } },
+                            onClick = {
+                                selectedCategoryInput.value = selectedCategory.value
+                                priceMinInput.value = priceMin.value
+                                priceMaxInput.value = priceMax.value
+                                scope.launch { drawerState.open() }
+                            },
                             modifier = Modifier
                                 .height(26.dp)
                                 .width(36.dp),
@@ -229,10 +242,9 @@ fun FilterSidebar(
     selectedCategory: MutableState<String?>,
     priceMin: MutableState<String>,
     priceMax: MutableState<String>,
+    categories: List<CategoryData>,
     onApply: () -> Unit
 ) {
-    val categories = listOf("Ikan Air Tawar", "Ikan Air Laut", "Udang & Cumi", "Kerang & Kepiting", "Olahan Ikan")
-
     Column(
         modifier = Modifier
             .fillMaxHeight()
@@ -254,11 +266,11 @@ fun FilterSidebar(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        categories.forEach { cat ->
-            val isSelected = selectedCategory.value == cat
+        categories.sortedBy { it.nama.lowercase() }.forEach { cat ->
+            val isSelected = selectedCategory.value == cat.id
             Button(
                 onClick = {
-                    selectedCategory.value = if (isSelected) null else cat
+                    selectedCategory.value = if (isSelected) null else cat.id
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (isSelected) PrimaryColor else Color.Transparent,
@@ -270,7 +282,7 @@ fun FilterSidebar(
                     .fillMaxWidth()
                     .padding(vertical = 4.dp)
             ) {
-                Text(cat, fontFamily = Poppins)
+                Text(cat.nama, fontFamily = Poppins)
             }
         }
 
@@ -337,6 +349,21 @@ fun FilterSidebar(
         ) {
             Text("Terapkan Filter", fontFamily = Poppins, color = Color.White)
         }
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Button(
+            onClick = {
+                selectedCategory.value = null
+                priceMin.value = ""
+                priceMax.value = ""
+            },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(8.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)
+        ) {
+            Text("Hapus Filter", fontFamily = Poppins, color = Color.DarkGray)
+        }
     }
 }
 
@@ -381,9 +408,8 @@ fun ProductCard(product: ProductData, modifier: Modifier = Modifier, navControll
                 maxLines = 1
             )
 
-            val hargaDisplay = if (product.diskon > 0) product.hargaDiskon else product.harga
             Text(
-                text = formatRupiah(hargaDisplay) + "/kg",
+                text = formatRupiah(product.hargaDiskon) + "/kg",
                 color = Color.Gray,
                 fontSize = 12.sp,
                 fontFamily = Poppins,

@@ -50,15 +50,4 @@ class CartRepo {
             false
         }
     }
-
-    fun getProductById(productId: String, onResult: (ProductData?) -> Unit){
-        firestore.collection("data").document("stock")
-            .collection("products").document(productId)
-            .get()
-            .addOnSuccessListener { document ->
-                val product = document.toObject(ProductData::class.java)
-                onResult(product)
-            }
-            .addOnFailureListener { onResult(null) }
-    }
 }

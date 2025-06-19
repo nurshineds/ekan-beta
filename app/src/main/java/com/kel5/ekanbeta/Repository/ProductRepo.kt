@@ -1,12 +1,17 @@
 package com.kel5.ekanbeta.Repository
 
 import com.google.firebase.firestore.FirebaseFirestore
+import com.kel5.ekanbeta.Data.CategoryData
 import kotlinx.coroutines.tasks.await
 import com.kel5.ekanbeta.Data.ProductData
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 
 class ProductRepo {
     private val firestore = FirebaseFirestore.getInstance()
     val docRef = firestore.collection("data").document("stock").collection("products")
+    val categoryRef = firestore.collection("data").document("stock").collection("categories")
 
     suspend fun getProducts(): List<ProductData>{
         return try{
@@ -32,5 +37,22 @@ class ProductRepo {
             .get()
             .await()
         return snapshot.toObjects(ProductData::class.java)
+    }
+
+    fun getCategories(): Flow<List<CategoryData>> = callbackFlow {
+        val listener = categoryRef.addSnapshotListener { snapshot, error ->
+            if(error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+
+            val categoryList = snapshot?.documents?.mapNotNull { doc ->
+                doc.toObject(CategoryData::class.java)
+            } ?: emptyList()
+
+            trySend(categoryList)
+        }
+
+        awaitClose{ listener.remove() }
     }
 }

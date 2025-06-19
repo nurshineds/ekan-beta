@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import androidx.compose.runtime.State
 import androidx.lifecycle.viewModelScope
-import com.kel5.ekanbeta.Common.hitungHargaPromo
 import com.kel5.ekanbeta.Repository.ProductRepo
 import com.kel5.ekanbeta.Repository.StockReqRepo
 import kotlinx.coroutines.flow.MutableStateFlow
