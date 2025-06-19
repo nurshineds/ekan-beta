@@ -175,7 +175,7 @@ fun ProfileUserScreen(
 //                )
             }
 
-            Spacer(modifier = Modifier.height(64.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = {

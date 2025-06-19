@@ -92,7 +92,7 @@ fun AppNav(navController: NavHostController) {
             val bankName = backStackEntry.arguments?.getString("bankName") ?: ""
             val accountNumber = backStackEntry.arguments?.getString("accountNumber") ?: ""
             val amount = backStackEntry.arguments?.getFloat("amount") ?: 0f
-            val orderId = backStackEntry.arguments?.getString("orderID") ?: ""
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
 
             UserPaymentDetailScreen(
                 navController = navController,

@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 fun ProductUserScreen(navController: NavHostController) {
     val productViewModel: ProductViewModel = viewModel()
     val products by productViewModel.productList.collectAsState()
-    val categoryList by productViewModel.categoryList.collectAsState()
+    val categories by productViewModel.categoryList.collectAsState()
 
     val searchText = remember { mutableStateOf("") }
 
@@ -81,7 +81,7 @@ fun ProductUserScreen(navController: NavHostController) {
                     selectedCategory = selectedCategoryInput,
                     priceMin = priceMinInput,
                     priceMax = priceMaxInput,
-                    categories = categoryList,
+                    categories = categories,
                     onApply = {
                         selectedCategory.value = selectedCategoryInput.value
                         priceMin.value = priceMinInput.value
@@ -286,11 +286,11 @@ fun FilterSidebar(
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text("Harga (Rp)", fontWeight = FontWeight.Bold, fontSize = 16.sp, fontFamily = Poppins)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         val borderColor = PrimaryColor
 
         TextField(
@@ -315,7 +315,7 @@ fun FilterSidebar(
             shape = RoundedCornerShape(8.dp)
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         TextField(
             value = priceMax.value,
@@ -339,7 +339,7 @@ fun FilterSidebar(
             shape = RoundedCornerShape(8.dp)
         )
 
-        Spacer(modifier = Modifier.height(64.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = onApply,

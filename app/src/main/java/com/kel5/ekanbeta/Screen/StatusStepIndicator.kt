@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kel5.ekanbeta.ui.theme.Poppins
@@ -61,7 +62,8 @@ fun StatusStepIndicator(currentStep: Int, allDisabled: Boolean = false) {
                     text = title,
                     fontSize = 12.sp,
                     fontFamily = Poppins,
-                    color = if (allDisabled) Color.Gray else if (index <= currentStep) PrimaryColor else Color.Gray
+                    color = if (allDisabled) Color.Gray else if (index <= currentStep) PrimaryColor else Color.Gray,
+                    textAlign = TextAlign.Center
                 )
             }
 

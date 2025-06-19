@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kel5.ekanbeta.Common.formatRupiah
 import com.kel5.ekanbeta.Screen.StatusStepIndicator
 import com.kel5.ekanbeta.ui.theme.Poppins
 import com.kel5.ekanbeta.ui.theme.PrimaryColor
@@ -185,7 +186,7 @@ fun UserPayPage(navController: NavHostController, orderId: String){
                     order?.let {
                         Text("Status: ${it.status.replaceFirstChar { it.uppercase() }}", fontFamily = Poppins)
                         Text("Total Produk: ${it.items.values.sum()}", fontFamily = Poppins)
-                        Text("Total Harga: Rp ${it.total}", fontFamily = Poppins)
+                        Text("Total Harga: " + formatRupiah(it.total.toInt()), fontFamily = Poppins)
                     }
 
                 }

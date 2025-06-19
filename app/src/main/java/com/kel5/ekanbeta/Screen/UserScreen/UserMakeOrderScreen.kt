@@ -67,10 +67,7 @@ fun UserMakeOrderScreen(navController: NavHostController){
     val products = orderViewModel.productList
     val total = orderViewModel.total.value
     val ongkir = orderViewModel.ongkir.value
-    val diskonMember = orderViewModel.diskonMember.value
-    val diskonOngkir = orderViewModel.diskonOngkir.value
     val totalFinal = orderViewModel.totalFinal.value
-    val totalSetelahDiskon = orderViewModel.totalSetelahDiskon.value
 
     val selectedAddress by addressViewModel.selectedAddress.observeAsState()
 

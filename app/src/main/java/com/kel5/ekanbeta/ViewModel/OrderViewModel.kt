@@ -42,9 +42,9 @@ class OrderViewModel(
     val ongkir = mutableFloatStateOf(0f)
     val totalFinal = mutableFloatStateOf(0f)
 
-    val diskonMember = mutableFloatStateOf(0f)
-    val diskonOngkir = mutableFloatStateOf(0f)
-    val totalSetelahDiskon = mutableFloatStateOf(0f)
+//    val diskonMember = mutableFloatStateOf(0f)
+//    val diskonOngkir = mutableFloatStateOf(0f)
+//    val totalSetelahDiskon = mutableFloatStateOf(0f)
 
     private val _orders = MutableLiveData<List<OrderData>>()
     val orders: LiveData<List<OrderData>> = _orders
@@ -124,8 +124,7 @@ class OrderViewModel(
     private fun calculate(){
         total.value = productList.sumOf {
             val qty = user.value.cartItems[it.id] ?: 0
-            val hargaFinal = if (it.diskon > 0) hitungHargaPromo(it.harga, it.diskon) else it.harga
-            hargaFinal * qty
+            it.hargaDiskon * qty
         }.toFloat()
 
         ongkir.value = total.value * 0.1f
@@ -166,7 +165,7 @@ class OrderViewModel(
             address = selectedAddress,
             status = "belum bayar",
             items = cartItems,
-            total = totalSetelahDiskon.value
+            total = totalFinal.value
         )
 
         val firestore = Firebase.firestore

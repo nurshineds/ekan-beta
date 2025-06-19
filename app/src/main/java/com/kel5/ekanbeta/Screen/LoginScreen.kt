@@ -48,9 +48,10 @@ import com.kel5.ekanbeta.ui.theme.PrimaryColor
 
 @Composable
 fun LoginScreen(
-    navController: NavController,
-    authViewModel: AuthViewModel = viewModel()
+    navController: NavController
 ) {
+    val authViewModel: AuthViewModel = viewModel()
+
     val email by authViewModel.email.collectAsState()
     val password by authViewModel.password.collectAsState()
 
@@ -64,19 +65,6 @@ fun LoginScreen(
     val loginSuccess by authViewModel.loginSuccess.collectAsState()
 
     var passwordVisible by remember { mutableStateOf(false) }
-
-    LaunchedEffect(loginSuccess) {
-        if(loginSuccess == true){
-            when(userRole){
-                "admin" -> navController.navigate("AdminHome"){
-                    popUpTo("Login") { inclusive = true }
-                }
-                "user" -> navController.navigate("UserHome"){
-                    popUpTo("Login") { inclusive = true }
-                }
-            }
-        }
-    }
 
     Column(
         modifier = Modifier
@@ -156,7 +144,18 @@ fun LoginScreen(
         Button(
             onClick = {
                 authViewModel.clearErrors()
-                authViewModel.login() },
+                authViewModel.login()
+                if(loginSuccess == true){
+                    when(userRole){
+                        "admin" -> navController.navigate("AdminHome"){
+                            popUpTo("Login") { inclusive = true }
+                        }
+                        "user" -> navController.navigate("UserHome"){
+                            popUpTo("Login") { inclusive = true }
+                        }
+                    }
+                }
+                      },
             shape = RoundedCornerShape(100.dp),
             colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
             modifier = Modifier
