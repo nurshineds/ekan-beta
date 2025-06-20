@@ -3,17 +3,15 @@ package com.kel5.ekanbeta.Repository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.kel5.ekanbeta.Data.ProductData
 import kotlinx.coroutines.tasks.await
 
 class CartRepo {
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
+    val uid = auth.currentUser?.uid ?: ""
+    val userDoc = firestore.collection("users").document(uid)
 
     suspend fun addToCart(productId: String) : Boolean {
-        val uid = auth.currentUser?.uid ?: return false
-        val userDoc = firestore.collection("users").document(uid)
-
         return try{
             val snapshot = userDoc.get().await()
             val currentCart = snapshot.get("cartItems") as? Map<String, Long> ?: emptyMap()
@@ -29,9 +27,6 @@ class CartRepo {
     }
 
     suspend fun removeFromCart(productId: String, removeAll: Boolean = false): Boolean{
-        val uid = auth.currentUser?.uid ?: return false
-        val userDoc = firestore.collection("users").document(uid)
-
         return try{
             val snapshot = userDoc.get().await()
             val currentCart = snapshot.get("cartItems") as? Map<String, Long> ?: emptyMap()

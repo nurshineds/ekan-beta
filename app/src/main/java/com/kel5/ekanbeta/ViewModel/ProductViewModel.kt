@@ -1,9 +1,7 @@
 package com.kel5.ekanbeta.ViewModel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.kel5.ekanbeta.Common.hitungHargaPromo
 import com.kel5.ekanbeta.Data.CategoryData
 import com.kel5.ekanbeta.Data.ProductData
 import com.kel5.ekanbeta.Repository.ProductRepo
@@ -32,8 +30,7 @@ class ProductViewModel(
 
     private fun getProducts(){
         viewModelScope.launch {
-            val allProducts = productRepo.getProducts()
-            _productList.value = allProducts
+            _productList.value = productRepo.getProducts()
         }
     }
 
@@ -44,13 +41,9 @@ class ProductViewModel(
         }
     }
 
-    fun getCategories(){
+    private fun getCategories(){
         viewModelScope.launch {
-            productRepo.getCategories()
-                .catch { e -> e.printStackTrace() }
-                .collect { categories ->
-                    _categoryList.value = categories
-                }
+            _categoryList.value = productRepo.getCategories()
         }
     }
 }

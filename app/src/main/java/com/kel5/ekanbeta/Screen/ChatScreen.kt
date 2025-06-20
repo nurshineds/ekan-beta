@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,7 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.kel5.ekanbeta.Common.ChatViewModelFactory
 import com.kel5.ekanbeta.Repository.ChatRepo
@@ -40,7 +40,8 @@ fun ChatScreen(
     toUserId: String,
     chatRepo: ChatRepo,
     isAdmin: Boolean,
-    navController: NavHostController) {
+    navController: NavHostController
+) {
     val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModelFactory(chatRepo))
 
     val messages by chatViewModel.messages.collectAsState()
@@ -48,14 +49,13 @@ fun ChatScreen(
     val isTyping by chatViewModel.isTyping.collectAsState()
     val lastSeen by chatViewModel.lastSeen.collectAsState()
     var messageText by remember { mutableStateOf("") }
+    val listState = rememberLazyListState()
 
     val currentUserId = chatViewModel.currentUserId
-
     var title by remember { mutableStateOf("E-Kan Customer Service") }
 
     LaunchedEffect(toUserId) {
         chatViewModel.startListening(toUserId)
-
         if (isAdmin) {
             chatViewModel.getUserData(toUserId) {
                 title = it ?: "Pengguna"
@@ -66,6 +66,12 @@ fun ChatScreen(
     DisposableEffect(Unit) {
         onDispose {
             chatViewModel.stopListening()
+        }
+    }
+
+    LaunchedEffect(messages.size) {
+        if (messages.isNotEmpty()) {
+            listState.animateScrollToItem(messages.lastIndex)
         }
     }
 
@@ -90,17 +96,12 @@ fun ChatScreen(
 
     Scaffold(
         topBar = {
-            Surface(
-                tonalElevation = 4.dp,
-                shadowElevation = 4.dp
-            ) {
+            Surface(tonalElevation = 4.dp, shadowElevation = 4.dp) {
                 Column {
                     TopAppBar(
                         modifier = Modifier.background(Color.White),
                         navigationIcon = {
-                            IconButton(onClick = {
-                                navController.popBackStack()
-                            }) {
+                            IconButton(onClick = { navController.popBackStack() }) {
                                 Icon(
                                     imageVector = Icons.Default.ArrowBackIosNew,
                                     contentDescription = "Back",
@@ -109,9 +110,7 @@ fun ChatScreen(
                             }
                         },
                         title = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 Surface(
                                     shape = CircleShape,
                                     color = if (isAdmin) Color.LightGray else PrimaryColor,
@@ -127,9 +126,7 @@ fun ChatScreen(
 
                                 Spacer(modifier = Modifier.width(12.dp))
 
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(0.dp)
-                                ) {
+                                Column(verticalArrangement = Arrangement.spacedBy(0.dp)) {
                                     Text(
                                         text = title,
                                         fontWeight = FontWeight.Bold,
@@ -157,16 +154,18 @@ fun ChatScreen(
             }
         }
     ) { padding ->
-        Column(modifier = Modifier
-            .padding(padding)
-            .background(BackgroundColor)
-            .fillMaxSize()) {
-
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .background(BackgroundColor)
+                .fillMaxSize()
+        ) {
             LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .weight(1f)
                     .padding(8.dp),
-                reverseLayout = false
+                reverseLayout = true
             ) {
                 items(messages) { message ->
                     val isMe = message.senderId == currentUserId
@@ -219,7 +218,6 @@ fun ChatScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
-                            .padding(top = 8.dp)
                             .height(65.dp)
                     ) {
                         OutlinedTextField(

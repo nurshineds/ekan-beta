@@ -46,7 +46,7 @@ class ChatRepo(
 
     fun getAllChatRooms() : Query{
         return firestore.collection("chatRooms")
-            .orderBy("lastTimestamp", Query.Direction.DESCENDING)
+            .orderBy("lastTimestamp", Query.Direction.ASCENDING)
     }
 
     private fun generateRoomId(userId1: String, userId2: String): String{

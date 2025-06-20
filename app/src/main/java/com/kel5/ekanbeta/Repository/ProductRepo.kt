@@ -39,20 +39,15 @@ class ProductRepo {
         return snapshot.toObjects(ProductData::class.java)
     }
 
-    fun getCategories(): Flow<List<CategoryData>> = callbackFlow {
-        val listener = categoryRef.addSnapshotListener { snapshot, error ->
-            if(error != null) {
-                close(error)
-                return@addSnapshotListener
-            }
-
-            val categoryList = snapshot?.documents?.mapNotNull { doc ->
+    suspend fun getCategories(): List<CategoryData> {
+        return try {
+            val snapshot = categoryRef.get().await()
+            snapshot.documents.mapNotNull { doc ->
                 doc.toObject(CategoryData::class.java)
-            } ?: emptyList()
-
-            trySend(categoryList)
+            }
+        } catch (e: Exception) {
+            emptyList()
         }
-
-        awaitClose{ listener.remove() }
     }
+
 }

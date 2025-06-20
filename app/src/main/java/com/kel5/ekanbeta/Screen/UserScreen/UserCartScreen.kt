@@ -324,9 +324,8 @@ fun ItemCard(
                 fontWeight = FontWeight.SemiBold
             )
 
-            val hargaDisplay = if (product.diskon > 0) product.hargaDiskon else product.harga
             Text(
-                text = formatRupiah(hargaDisplay) + "/kg",
+                text = formatRupiah(product.hargaDiskon) + "/kg",
                 fontSize = 14.sp,
                 fontFamily = Poppins,
                 color = Color.Gray
