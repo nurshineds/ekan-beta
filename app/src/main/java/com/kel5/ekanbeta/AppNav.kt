@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.kel5.ekanbeta.Repository.AuthRepo
 import com.kel5.ekanbeta.Repository.ChatRepo
 import com.kel5.ekanbeta.Screen.AdminScreen.AdminChatScreen
 import com.kel5.ekanbeta.Screen.AdminScreen.AdminConfirmStockDetailScreen
@@ -162,6 +163,7 @@ fun AppNav(navController: NavHostController) {
             ChatScreen(
                 toUserId = toUserId,
                 chatRepo = ChatRepo(),
+                authRepo = AuthRepo(),
                 isAdmin = isAdmin,
                 navController = navController
             )

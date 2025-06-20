@@ -32,7 +32,9 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.kel5.ekanbeta.Common.ChatViewModelFactory
 import com.kel5.ekanbeta.Common.formatRupiah
+import com.kel5.ekanbeta.Repository.AuthRepo
 import com.kel5.ekanbeta.Repository.ChatRepo
+import com.kel5.ekanbeta.Room.AppDatabase
 import com.kel5.ekanbeta.ViewModel.CartViewModel
 import com.kel5.ekanbeta.ViewModel.ChatViewModel
 import com.kel5.ekanbeta.ViewModel.ProductViewModel
@@ -47,15 +49,19 @@ fun UserProductDetailScreen(navController: NavHostController, productId: String)
     val cartViewModel: CartViewModel = viewModel()
     val userViewModel: UserViewModel = viewModel()
 
-    val chatRepo = remember { ChatRepo() }
+    val context = LocalContext.current
+    val chatRepo = remember {
+        val db = AppDatabase.getDatabase(context)
+        ChatRepo().apply { setMessageDao(db.messageDao()) }
+    }
+    val authRepo = remember { AuthRepo() }
     val chatViewModel: ChatViewModel = viewModel(
-        factory = ChatViewModelFactory(chatRepo)
+        factory = ChatViewModelFactory(chatRepo, authRepo)
     )
 
     val product = productViewModel.selectedProduct.collectAsState()
     val adminUid = remember { mutableStateOf<String?>(null) }
     val user = userViewModel.user.value
-    val context = LocalContext.current
 
     LaunchedEffect(productId) {
         productViewModel.getProductById(productId)

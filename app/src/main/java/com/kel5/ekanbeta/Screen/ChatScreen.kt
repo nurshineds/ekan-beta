@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.kel5.ekanbeta.Common.ChatViewModelFactory
+import com.kel5.ekanbeta.Repository.AuthRepo
 import com.kel5.ekanbeta.Repository.ChatRepo
 import com.kel5.ekanbeta.ViewModel.ChatViewModel
 import com.kel5.ekanbeta.ui.theme.BackgroundColor
@@ -39,10 +40,13 @@ import java.util.*
 fun ChatScreen(
     toUserId: String,
     chatRepo: ChatRepo,
+    authRepo: AuthRepo,
     isAdmin: Boolean,
     navController: NavHostController
 ) {
-    val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModelFactory(chatRepo))
+    val chatViewModel: ChatViewModel = viewModel(
+        factory = ChatViewModelFactory(chatRepo, authRepo)
+    )
 
     val messages by chatViewModel.messages.collectAsState()
     val isOnline by chatViewModel.isOnline.collectAsState()
@@ -253,7 +257,8 @@ fun ChatScreen(
                                 chatViewModel.sendMessage(toUserId, messageText.trim())
                                 messageText = ""
                             }
-                        }) {
+                        }, enabled = isOnline == true
+                            ) {
                             Icon(
                                 Icons.Default.Send,
                                 contentDescription = "Kirim pesan",

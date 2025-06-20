@@ -94,6 +94,19 @@ class AuthRepo(
         }
     }
 
+    suspend fun getUserByIdWithRole(role: String): UserData? {
+        return try {
+            val result = firestore.collection("users")
+                .whereEqualTo("role", role)
+                .limit(1)
+                .get()
+                .await()
+            result.documents.firstOrNull()?.toObject(UserData::class.java)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     suspend fun getCurrentUser(): UserData?{
         val uid = auth.currentUser?.uid ?: return null
         val snapshot = firestore.collection("users").document(uid).get().await()

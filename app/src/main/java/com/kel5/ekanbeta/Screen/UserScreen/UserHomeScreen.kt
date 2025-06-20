@@ -36,7 +36,9 @@ import com.kel5.ekanbeta.Common.ChatViewModelFactory
 import com.kel5.ekanbeta.Common.formatRupiah
 import com.kel5.ekanbeta.Data.ProductData
 import com.kel5.ekanbeta.R
+import com.kel5.ekanbeta.Repository.AuthRepo
 import com.kel5.ekanbeta.Repository.ChatRepo
+import com.kel5.ekanbeta.Room.AppDatabase
 import com.kel5.ekanbeta.ViewModel.*
 import com.kel5.ekanbeta.ui.theme.BackgroundColor
 import com.kel5.ekanbeta.ui.theme.Poppins
@@ -49,8 +51,16 @@ import com.tbuonomo.viewpagerdotsindicator.compose.type.ShiftIndicatorType
 fun HomeUserScreen(navController: NavHostController) {
     val bannerViewModel: BannerViewModel = viewModel()
     val productViewModel: ProductViewModel = viewModel()
-    val chatRepo = remember { ChatRepo() }
-    val chatViewModel: ChatViewModel = viewModel(factory = ChatViewModelFactory(chatRepo))
+
+    val context = LocalContext.current
+    val chatRepo = remember {
+        val db = AppDatabase.getDatabase(context)
+        ChatRepo().apply { setMessageDao(db.messageDao()) }
+    }
+    val authRepo = remember { AuthRepo() }
+    val chatViewModel: ChatViewModel = viewModel(
+        factory = ChatViewModelFactory(chatRepo, authRepo)
+    )
 
     val banners by bannerViewModel.banners.collectAsState()
     val products by productViewModel.productList.collectAsState()

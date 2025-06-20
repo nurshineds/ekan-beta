@@ -47,8 +47,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.kel5.ekanbeta.ui.theme.BackgroundColor
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import com.kel5.ekanbeta.Common.ChatViewModelFactory
+import com.kel5.ekanbeta.Repository.AuthRepo
 import com.kel5.ekanbeta.Repository.ChatRepo
+import com.kel5.ekanbeta.Room.AppDatabase
 import com.kel5.ekanbeta.ViewModel.ChatViewModel
 import com.kel5.ekanbeta.ui.theme.PrimaryColor
 
@@ -57,9 +60,14 @@ fun ProfileUserScreen(
     navController: NavHostController) {
     val authViewModel: AuthViewModel = viewModel()
 
-    val chatRepo = remember { ChatRepo() }
+    val context = LocalContext.current
+    val chatRepo = remember {
+        val db = AppDatabase.getDatabase(context)
+        ChatRepo().apply { setMessageDao(db.messageDao()) }
+    }
+    val authRepo = remember { AuthRepo() }
     val chatViewModel: ChatViewModel = viewModel(
-        factory = ChatViewModelFactory(chatRepo)
+        factory = ChatViewModelFactory(chatRepo, authRepo)
     )
 
     val username by authViewModel.currentUsername.collectAsState()
