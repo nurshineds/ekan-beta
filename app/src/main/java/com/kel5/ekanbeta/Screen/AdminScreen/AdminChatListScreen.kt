@@ -25,15 +25,24 @@ import com.kel5.ekanbeta.Common.ChatViewModelFactory
 import com.kel5.ekanbeta.Repository.ChatRepo
 import com.kel5.ekanbeta.ui.theme.Poppins
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import com.kel5.ekanbeta.Data.RoomchatDisplay
+import com.kel5.ekanbeta.Repository.AuthRepo
+import com.kel5.ekanbeta.Room.AppDatabase
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun AdminChatScreen(navController: NavController) {
-    val chatViewModel : ChatViewModel = viewModel(
-        factory = ChatViewModelFactory(ChatRepo())
+    val context = LocalContext.current
+    val chatRepo = remember {
+        val db = AppDatabase.getDatabase(context)
+        ChatRepo().apply { setMessageDao(db.messageDao()) }
+    }
+    val authRepo = remember { AuthRepo() }
+    val chatViewModel: ChatViewModel = viewModel(
+        factory = ChatViewModelFactory(chatRepo, authRepo)
     )
 
     val chatRooms by chatViewModel.chatRooms.collectAsState()

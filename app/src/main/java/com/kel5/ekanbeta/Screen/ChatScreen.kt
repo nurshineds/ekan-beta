@@ -58,24 +58,22 @@ fun ChatScreen(
     val currentUserId = chatViewModel.currentUserId
     var title by remember { mutableStateOf("E-Kan Customer Service") }
 
-    LaunchedEffect(toUserId) {
+    LaunchedEffect(toUserId, messages.size) {
         chatViewModel.startListening(toUserId)
         if (isAdmin) {
             chatViewModel.getUserData(toUserId) {
                 title = it ?: "Pengguna"
             }
         }
+
+        if (messages.isNotEmpty()) {
+            listState.animateScrollToItem(messages.lastIndex)
+        }
     }
 
     DisposableEffect(Unit) {
         onDispose {
             chatViewModel.stopListening()
-        }
-    }
-
-    LaunchedEffect(messages.size) {
-        if (messages.isNotEmpty()) {
-            listState.animateScrollToItem(messages.lastIndex)
         }
     }
 
@@ -257,8 +255,7 @@ fun ChatScreen(
                                 chatViewModel.sendMessage(toUserId, messageText.trim())
                                 messageText = ""
                             }
-                        }, enabled = isOnline == true
-                            ) {
+                        }) {
                             Icon(
                                 Icons.Default.Send,
                                 contentDescription = "Kirim pesan",
